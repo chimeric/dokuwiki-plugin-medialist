@@ -1,0 +1,9 @@
+/**
+ * CSS for the medialist plugin
+ * @author Michael Klier <chi@chimeric.de>
+ */
+
+div.dokuwiki ul.medialist {
+  list-style: none;
+  margin-left: 0;
+} 
