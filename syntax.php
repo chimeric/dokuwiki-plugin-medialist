@@ -56,11 +56,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $match = substr($match,12,-2);
 
         // process the match
-        $mdir = mediaFN(cleanID($match));
-        if(empty($match) || !@file_exists($mdir) || !@is_dir($mdir)) $match = $ID;
-
-        // check permissions
-        if(auth_quickaclcheck($match) < AUTH_READ) return array();
+        if(empty($match) || $match == '@PAGE@') {
+            $match = $ID;
+        }
 
         return array($match);
     }
@@ -141,29 +139,46 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         global $conf;
 
         $media = array();
-
         $linked_media = array();
         $intern_media = array();
 
-        // get the instructions
-        $ins = p_cached_instructions(wikiFN($id),true,$id);
+        // check permissions for the page
+        if(auth_quickaclcheck($id) >= AUTH_READ) {
+            // get the instructions
+            $ins = p_cached_instructions(wikiFN($id),true,$id);
 
-        // get linked media files
-        foreach($ins as $node) {
-            if($node[0] == 'internalmedia') {
-                array_push($linked_media,$node[1][0]);
-            } elseif($node[0] == 'externalmedia') {
-                array_push($linked_media,$node[1][0]);
+            // get linked media files
+            foreach($ins as $node) {
+                if($node[0] == 'internalmedia') {
+                    array_push($linked_media,$node[1][0]);
+                } elseif($node[0] == 'externalmedia') {
+                    array_push($linked_media,$node[1][0]);
+                }
             }
         }
 
-        // get mediafiles of current namespace
-        $res = array(); // search result
-        $dir = utf8_encode(str_replace(':','/',$id));
-        require_once(DOKU_INC.'inc/search.php');
-        search($res,$conf['mediadir'],'search_media',array(),$dir);
-        foreach($res as $item) {
-            array_push($intern_media,$item['id']);
+        // media dir lookup
+        $found = false;
+        while(!$found) {
+            $dir = utf8_encode(str_replace(':','/',$id));
+            if(!@is_dir($conf['mediadir'] . '/' . $dir)) {
+                // ok - check next uppper namespace
+                $id = getNS($id);
+            } else {
+                // we got it
+                $found = true;
+            }
+        }
+
+        // check permissions for the mediadir
+        if(auth_quickaclcheck($dir) >= AUTH_READ) {
+            // get mediafiles of current namespace
+            $res = array(); // search result
+            require_once(DOKU_INC.'inc/search.php');
+            search($res,$conf['mediadir'],'search_media',array(),$dir);
+            foreach($res as $item) {
+                array_push($intern_media,$item['id']);
+            }
         }
 
         // remove unique items
