@@ -71,7 +71,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         if($mode == 'xhtml'){
             // disable caching
             $renderer->info['cache'] = false;
-            $renderer->doc .= $this->p_xhtml_medialist($data[0]);
+            $renderer->doc .= $this->p_medialist_xhtml($data[0]);
             return true;
         }
         return false;
@@ -82,14 +82,14 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function p_xhtml_medialist($id){
+    function p_medialist_xhtml($id){
         $out  = '';
 
         $media = $this->media_lookup($id);
 
         if(empty($media)) return;
 
-        $out .= '<ul class="medialist">';
+       $out .= '<ul class="medialist">';
         $out .= html_buildlist($media,'medialist',array(&$this,'media_item'));
         $out .= '</ul>';
 
