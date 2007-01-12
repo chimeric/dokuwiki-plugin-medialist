@@ -1,6 +1,6 @@
 <?php
 /**
- * Syntax Plugin medialist
+ * Syntax Plugin Medialist
  * 
  * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author     Michael Klier <chi@chimeric.de>
@@ -23,9 +23,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Michael Klier',
             'email'  => 'chi@chimeric.de',
-            'date'   => '2006-01-08',
-            'name'   => 'mediaindex',
-            'desc'   => 'Displays a list of mediafiles linked from the given page or located in the namespace of the page.',
+            'date'   => '2006-01-12',
+            'name'   => 'Medialist',
+            'desc'   => 'Displays a list of media files linked from the given page or located in the namespace of the page.',
             'url'    => 'http://www.chimeric.de/projects/dokuwiki/plugin/medialist'
         );
     }
@@ -71,7 +71,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         if($mode == 'xhtml'){
             // disable caching
             $renderer->info['cache'] = false;
-            $renderer->doc .= $this->p_medialist_xhtml($data[0]);
+            $renderer->doc .= $this->_medialist_xhtml($data[0]);
             return true;
         }
         return false;
@@ -82,15 +82,15 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function p_medialist_xhtml($id){
+    function _medialist_xhtml($id){
         $out  = '';
 
-        $media = $this->media_lookup($id);
+        $media = $this->_media_lookup($id);
 
         if(empty($media)) return;
 
        $out .= '<ul class="medialist">';
-        $out .= html_buildlist($media,'medialist',array(&$this,'media_item'));
+        $out .= html_buildlist($media,'medialist',array(&$this,'_media_item'));
         $out .= '</ul>';
 
         return ($out);
@@ -101,7 +101,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function media_item($src) {
+    function _media_item($src) {
         global $conf;
 
         $out = '';
@@ -135,7 +135,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function media_lookup($id) {
+    function _media_lookup($id) {
         global $conf;
 
         $media = array();
