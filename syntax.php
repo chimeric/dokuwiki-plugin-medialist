@@ -1,9 +1,9 @@
 <?php
 /**
- * Syntax Plugin Medialist
+ * DokuWiki Syntax Plugin Medialist
  * 
- * @license    GPL 2 (http://www.gnu.org/licenses/gpl.html)
- * @author     Michael Klier <chi@chimeric.de>
+ * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
+ * @author  Michael Klier <chi@chimeric.de>
  */
 
 if(!defined('DOKU_INC')) define('DOKU_INC',realpath(dirname(__FILE__).'/../../').'/');
