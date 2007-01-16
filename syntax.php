@@ -57,10 +57,13 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
         // process the match
         if(empty($match) || $match == '@PAGE@') {
-            $match = $ID;
+            return array($ID);
+        } elseif(@file_exists(wikiFN($match))) {
+            return array(cleanID($match));
+        } else {
+            return array();
         }
 
-        return array($match);
     }
 
     /**
@@ -70,8 +73,10 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         
         if($mode == 'xhtml'){
             // disable caching
-            $renderer->info['cache'] = false;
-            $renderer->doc .= $this->_medialist_xhtml($data[0]);
+            if(!empty($data[0])) {
+                $renderer->info['cache'] = false;
+                $renderer->doc .= $this->_medialist_xhtml($data[0]);
+            }
             return true;
         }
         return false;
@@ -89,7 +94,11 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
         if(empty($media)) return;
 
-       $out .= '<ul class="medialist">';
+        print '<pre>';
+        print_R($media);
+        print '</pre>';
+
+        $out .= '<ul class="medialist">';
         $out .= html_buildlist($media,'medialist',array(&$this,'_media_item'));
         $out .= '</ul>';
 
