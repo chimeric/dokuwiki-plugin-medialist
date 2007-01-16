@@ -23,7 +23,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Michael Klier',
             'email'  => 'chi@chimeric.de',
-            'date'   => '2006-01-12',
+            'date'   => '2006-01-16',
             'name'   => 'Medialist',
             'desc'   => 'Displays a list of media files linked from the given page or located in the namespace of the page.',
             'url'    => 'http://www.chimeric.de/projects/dokuwiki/plugin/medialist'
@@ -90,17 +90,17 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     function _medialist_xhtml($id){
         $out  = '';
 
+        $medialist = array();
         $media = $this->_media_lookup($id);
 
         if(empty($media)) return;
 
-        print '<pre>';
-        print_R($media);
-        print '</pre>';
+        // add list levels for html_buildlist
+        foreach($media as $item) {
+            array_push($medialist, array('id'=>$item, 'level'=>1));
+        }
 
-        $out .= '<ul class="medialist">';
-        $out .= html_buildlist($media,'medialist',array(&$this,'_media_item'));
-        $out .= '</ul>';
+        $out .= html_buildlist($medialist,'medialist',array(&$this,'_media_item'));
 
         return ($out);
     }
@@ -110,20 +110,20 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function _media_item($src) {
+    function _media_item($item) {
         global $conf;
 
         $out = '';
 
         $link = array();
-        $link['url']    = ml($src);
+        $link['url']    = ml($item['id']);
         $link['class']  = 'media';
         $link['target'] = $conf['target']['media'];
-        $link['name']   = preg_replace('#.*?/|.*?:#','',$src);
+        $link['name']   = preg_replace('#.*?/|.*?:#','',$item['id']);
         $link['title']  = $link['name'];
 
         // add file icons
-        list($ext,$mime) = mimetype($src);
+        list($ext,$mime) = mimetype($item['id']);
         $class = preg_replace('/[^_\-a-z0-9]+/i','_',$ext);
         $link['class'] .= ' mediafile mf_'.$class;
 
