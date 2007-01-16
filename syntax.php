@@ -23,7 +23,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         return array(
             'author' => 'Michael Klier',
             'email'  => 'chi@chimeric.de',
-            'date'   => '2006-01-16',
+            'date'   => '2007-01-16',
             'name'   => 'Medialist',
             'desc'   => 'Displays a list of media files linked from the given page or located in the namespace of the page.',
             'url'    => 'http://www.chimeric.de/projects/dokuwiki/plugin/medialist'
