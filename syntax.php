@@ -1,6 +1,13 @@
 <?php
 /**
  * DokuWiki Syntax Plugin Medialist
+ *
+ * Show a list of media files (images/archives ...) which are referenced
+ * in a given page or which belong to the same namespace.
+ *
+ * Syntax:  {{medialist>[pagename]}}
+ *
+ *   [pagename] - a valid wiki pagename (use @PAGE@ for the current page)
  * 
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author  Michael Klier <chi@chimeric.de>
@@ -196,4 +203,4 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         return($media);
     }
 }
-//Setup VIM: ex: et ts=4 enc=utf-8 :
+//setup vim:ts=4:sw=4:enc=utf-8:
