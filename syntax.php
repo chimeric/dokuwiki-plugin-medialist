@@ -142,6 +142,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $out .= 'title="' . $link['title'] . '">';
         $out .= $link['name'];
         $out .= '</a>';
+        $out .= '&nbsp;(' . filesize_h(filesize(mediaFN($item['id']))) . ')' . DOKU_LF;
 
         return ($out);
     }
