@@ -64,14 +64,21 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $match = substr($match,12,-2);
 
         // process the match
-        if(empty($match) || $match == '@PAGE@') {
-            return array($ID);
-        } elseif(@file_exists(wikiFN($match))) {
-            return array(cleanID($match));
-        } else {
-            return array();
+        if($match == '@PAGE@') {
+            $mode = 'page';
+            $id = $ID;
+        } elseif($match == '@NAMESPACE@') {
+            $mode = 'ns';
+            $id = $ID;
+        } elseif($match == '@ALL@') {
+            $mode = 'all';
+            $id = $ID;
+        } elseif(@page_exists(cleanID($match))) {
+            $mode = 'page';
+            $id = $match;
         }
 
+        return array($mode, $id);
     }
 
     /**
@@ -81,9 +88,11 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         
         if($mode == 'xhtml'){
             // disable caching
+            $mode = $data[0];
+            $id = $data[1];
             if(!empty($data[0])) {
                 $renderer->info['cache'] = false;
-                $renderer->doc .= $this->_medialist_xhtml($data[0]);
+                $renderer->doc .= $this->_medialist_xhtml($mode, $id);
             }
             return true;
         }
@@ -95,11 +104,11 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function _medialist_xhtml($id){
+    function _medialist_xhtml($mode, $id){
         $out  = '';
 
         $medialist = array();
-        $media = $this->_media_lookup($id);
+        $media = $this->_media_lookup($mode, $id);
 
         if(empty($media)) return;
 
@@ -153,37 +162,44 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function _media_lookup($id) {
+    function _media_lookup($mode, $id) {
         global $conf;
+
+        dbglog($mode);
+        dbglog($id);
 
         $media = array();
         $linked_media = array();
         $intern_media = array();
 
-        // check permissions for the page
-        if(auth_quickaclcheck($id) >= AUTH_READ) {
-            // get the instructions
-            $ins = p_cached_instructions(wikiFN($id),true,$id);
+        if(($mode == 'page') or ($mode == 'all')) {
+            // check permissions for the page
+            if(auth_quickaclcheck($id) >= AUTH_READ) {
+                // get the instructions
+                $ins = p_cached_instructions(wikiFN($id),true,$id);
 
-            // get linked media files
-            foreach($ins as $node) {
-                if($node[0] == 'internalmedia') {
-                    array_push($linked_media,$node[1][0]);
-                } elseif($node[0] == 'externalmedia') {
-                    array_push($linked_media,$node[1][0]);
+                // get linked media files
+                foreach($ins as $node) {
+                    if($node[0] == 'internalmedia') {
+                        array_push($linked_media,$node[1][0]);
+                    } elseif($node[0] == 'externalmedia') {
+                        array_push($linked_media,$node[1][0]);
+                    }
                 }
             }
         }
 
-        $dir = utf8_encode(str_replace(':','/', getNS($id)));
-        if(@is_dir($conf['mediadir'] . '/' . $dir)) {
-            if(auth_quickaclcheck($dir) >= AUTH_READ) {
-                // get mediafiles of current namespace
-                $res = array(); // search result
-                require_once(DOKU_INC.'inc/search.php');
-                search($res,$conf['mediadir'],'search_media',array(),$dir);
-                foreach($res as $item) {
-                    array_push($intern_media,$item['id']);
+        if(($mode == 'ns') or ($mode == 'all')) {
+            $dir = utf8_encode(str_replace(':','/', getNS($id)));
+            if(@is_dir($conf['mediadir'] . '/' . $dir)) {
+                if(auth_quickaclcheck($dir) >= AUTH_READ) {
+                    // get mediafiles of current namespace
+                    $res = array(); // search result
+                    require_once(DOKU_INC.'inc/search.php');
+                    search($res,$conf['mediadir'],'search_media',array(),$dir);
+                    foreach($res as $item) {
+                        array_push($intern_media,$item['id']);
+                    }
                 }
             }
         }
