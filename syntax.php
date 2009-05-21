@@ -175,27 +175,16 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             }
         }
 
-        // media dir lookup
-        $found = false;
-        while(!$found) {
-            $dir = utf8_encode(str_replace(':','/',$id));
-            if(!@is_dir($conf['mediadir'] . '/' . $dir)) {
-                // ok - check next uppper namespace
-                $id = getNS($id);
-            } else {
-                // we got it
-                $found = true;
-            }
-        }
-
-        // check permissions for the mediadir
-        if(auth_quickaclcheck($dir) >= AUTH_READ) {
-            // get mediafiles of current namespace
-            $res = array(); // search result
-            require_once(DOKU_INC.'inc/search.php');
-            search($res,$conf['mediadir'],'search_media',array(),$dir);
-            foreach($res as $item) {
-                array_push($intern_media,$item['id']);
+        $dir = utf8_encode(str_replace(':','/', getNS($id)));
+        if(@is_dir($conf['mediadir'] . '/' . $dir)) {
+            if(auth_quickaclcheck($dir) >= AUTH_READ) {
+                // get mediafiles of current namespace
+                $res = array(); // search result
+                require_once(DOKU_INC.'inc/search.php');
+                search($res,$conf['mediadir'],'search_media',array(),$dir);
+                foreach($res as $item) {
+                    array_push($intern_media,$item['id']);
+                }
             }
         }
 
