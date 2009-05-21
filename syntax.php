@@ -165,9 +165,6 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     function _media_lookup($mode, $id) {
         global $conf;
 
-        dbglog($mode);
-        dbglog($id);
-
         $media = array();
         $linked_media = array();
         $intern_media = array();
