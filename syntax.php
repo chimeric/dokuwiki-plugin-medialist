@@ -11,6 +11,7 @@
  * 
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author  Michael Klier <chi@chimeric.de>
+ * @author  Michael Braun <michael-dev@fami-braun.de>
  */
 // must be run within DokuWiki
 if(!defined('DOKU_INC')) die();
@@ -83,6 +84,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
     /**
      * Handles the actual output creation.
+     * @author Michael Braun <michael-dev@fami-braun.de>
      */
     function render($mode, &$renderer, $data) {
         
@@ -92,7 +94,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             $id = $data[1];
             if(!empty($data[0])) {
                 $renderer->info['cache'] = false;
-                $renderer->doc .= $this->_medialist_xhtml($mode, $id);
+                $renderer->doc .= $this->_medialist_xhtml($mode, $id, $renderer);
             }
             return true;
         }
@@ -103,8 +105,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      * Renders the medialist
      *
      * @author Michael Klier <chi@chimeric.de>
+     * @author Michael Braun <michael-dev@fami-braun.de>
      */
-    function _medialist_xhtml($mode, $id){
+    function _medialist_xhtml($mode, $id, &$renderer){
         $out  = '';
 
         $medialist = array();
@@ -114,7 +117,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
         // add list levels for html_buildlist
         foreach($media as $item) {
-            array_push($medialist, array('id'=>$item, 'level'=>1));
+            array_push($medialist, array('id'=>$item, 'level'=>1, 'renderer' => $renderer));
         }
 
         $out .= html_buildlist($medialist,'medialist',array(&$this,'_media_item'));
@@ -125,35 +128,41 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Callback function for html_buildlist()
      *
-     * @author Michael Klier <chi@chimeric.de>
+     * @author Michael Braun <michael-dev@fami-braun.de>
      */
     function _media_item($item) {
         global $conf;
 
-        $out = '';
+        $src = $item["id"];
+        $renderer = $item["renderer"];
+        list($src,$hash) = explode('#',$src,2);
+        resolve_mediaid(getNS($ID),$src,$exists);
 
-        $link = array();
-        $link['url']    = ml($item['id']);
-        $link['class']  = 'media';
-        $link['target'] = $conf['target']['media'];
-        $link['name']   = preg_replace('#.*?/|.*?:#','',$item['id']);
-        $link['title']  = $link['name'];
+        $noLink = false;
+        $link = $renderer->_getMediaLinkConf($src, NULL, NULL, NULL, NULL, NULL, true);
 
-        // add file icons
-        list($ext,$mime) = mimetype($item['id']);
-        $class = preg_replace('/[^_\-a-z0-9]+/i','_',$ext);
-        $link['class'] .= ' mediafile mf_'.$class;
+        list($ext,$mime,$dl) = mimetype($src,false);
+        if(substr($mime,0,5) == 'image' && $render){
+            $link['url'] = ml($src,array('id'=>$ID,'cache'=>$cache),($linking=='direct'));
+        }elseif($mime == 'application/x-shockwave-flash' && $render){
+            // don't link flash movies
+            $noLink = true;
+        }else{
+            // add file icons
+            $class = preg_replace('/[^_\-a-z0-9]+/i','_',$ext);
+            $link['class'] .= ' mediafile mf_'.$class;
+            $link['url'] = ml($src,array('id'=>$ID,'cache'=>$cache),true);
+        }
 
-        // build the link
-        $out .= '<a href="' . $link['url'] . '" ';
-        $out .= 'class="' . $link['class'] . '" ';
-        $out .= 'target="' . $link['target'] . '" ';
-        $out .= 'title="' . $link['title'] . '">';
-        $out .= $link['name'];
-        $out .= '</a>';
-        $out .= '&nbsp;(' . filesize_h(filesize(mediaFN($item['id']))) . ')' . DOKU_LF;
+        if($hash) $link['url'] .= '#'.$hash;
 
-        return ($out);
+        //markup non existing files
+        if (!$exists) {
+            $link['class'] .= ' wikilink2';
+        }
+
+        //output formatted
+        return $renderer->_formatLink($link);
     }
 
     /**
