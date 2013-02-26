@@ -1,0 +1,8 @@
+base   medialist
+author Michael Braun
+email  michael-dev@fami-braun.de
+date   2012-05-22
+name   medialist plugin
+desc   List files
+url    https://github.com/michael-dev/dokuwikipluginmedialist
+
