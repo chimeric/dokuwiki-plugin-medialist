@@ -57,7 +57,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Handler to prepare matched data for the rendering process
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         global $ID;
 
         // catch the match
@@ -84,7 +84,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Handles the actual output creation.
      */
-    function render($mode, &$renderer, $data) {
+    function render($mode, Doku_Renderer $renderer, $data) {
         
         if($mode == 'xhtml'){
             // disable caching
