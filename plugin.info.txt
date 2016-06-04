@@ -1,0 +1,7 @@
+base     medialist
+author   Michael Klier
+email    chi@chimeric.de
+date     2009-05-21
+name     MediaList Plugin
+desc     Display a list of media files linked from the page or located in the namespace.
+url      https://www.dokuwiki.org/plugin:medialist
