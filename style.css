@@ -7,3 +7,6 @@ div.dokuwiki ul.medialist {
   list-style: none;
   margin-left: 0;
 } 
+div.dokuwiki ul.medialist span.mediainfo {
+  font-size: 90%;
+}

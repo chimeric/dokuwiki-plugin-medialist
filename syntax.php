@@ -15,28 +15,11 @@
 // must be run within DokuWiki
 if(!defined('DOKU_INC')) die();
 
-if(!defined('DOKU_PLUGIN')) define('DOKU_PLUGIN',DOKU_INC.'lib/plugins/');
-require_once(DOKU_PLUGIN.'syntax.php');
-
 /**
  * All DokuWiki plugins to extend the parser/rendering mechanism
  * need to inherit from this class
  */
 class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
-
-    /**
-     * General Info
-     */
-    function getInfo(){
-        return array(
-            'author' => 'Michael Klier',
-            'email'  => 'chi@chimeric.de',
-            'date'   => @file_get_contents(DOKU_PLUGIN.'medialist/VERSION'),
-            'name'   => 'Medialist',
-            'desc'   => 'Displays a list of media files linked from the given page or located in the namespace of the page.',
-            'url'    => 'http://dokuwiki.org/plugin:medialist'
-        );
-    }
 
     /**
      * Syntax Type
@@ -57,7 +40,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Handler to prepare matched data for the rendering process
      */
-    function handle($match, $state, $pos, &$handler){
+    function handle($match, $state, $pos, Doku_Handler $handler){
         global $ID;
 
         // catch the match
@@ -84,9 +67,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Handles the actual output creation.
      */
-    function render($mode, &$renderer, $data) {
+    function render($format, Doku_Renderer $renderer, $data) {
         
-        if($mode == 'xhtml'){
+        if($format == 'xhtml'){
             // disable caching
             $mode = $data[0];
             $id = $data[1];
@@ -151,7 +134,10 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $out .= 'title="' . $link['title'] . '">';
         $out .= $link['name'];
         $out .= '</a>';
-        $out .= '&nbsp;(' . filesize_h(filesize(mediaFN($item['id']))) . ')' . DOKU_LF;
+        $out .= '&nbsp;<span class="mediainfo">(';
+        $out .= date("Y/m/d H:i:s", filemtime(mediaFN($item['id']))).'&nbsp;';
+        $out .= filesize_h(filesize(mediaFN($item['id'])));
+        $out .= ')</span>' . DOKU_LF;
 
         return ($out);
     }
@@ -207,4 +193,3 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         return($media);
     }
 }
-// vim:ts=4:sw=4:et:enc=utf-8:
