@@ -67,9 +67,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Handles the actual output creation.
      */
-    function render($mode, Doku_Renderer $renderer, $data) {
+    function render($format, Doku_Renderer $renderer, $data) {
         
-        if($mode == 'xhtml'){
+        if($format == 'xhtml'){
             // disable caching
             $mode = $data[0];
             $id = $data[1];
