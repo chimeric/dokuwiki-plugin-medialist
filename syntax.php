@@ -134,7 +134,10 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $out .= 'title="' . $link['title'] . '">';
         $out .= $link['name'];
         $out .= '</a>';
-        $out .= '&nbsp;(' . filesize_h(filesize(mediaFN($item['id']))) . ')' . DOKU_LF;
+        $out .= '&nbsp;<span class="mediainfo">(';
+        $out .= date("Y/m/d H:i:s", filemtime(mediaFN($item['id']))).'&nbsp;';
+        $out .= filesize_h(filesize(mediaFN($item['id'])));
+        $out .= ')</span>' . DOKU_LF;
 
         return ($out);
     }
