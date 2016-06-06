@@ -34,7 +34,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      * Connect pattern to lexer
      */
     function connectTo($mode) {
-        $this->Lexer->addSpecialPattern('{{medialist>.+?}}',$mode,'plugin_medialist');
+        $this->Lexer->addSpecialPattern('{{medialist>[^\r\n]+?}}',$mode,'plugin_medialist');
     }
 
     /**
