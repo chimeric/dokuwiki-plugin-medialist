@@ -2,15 +2,18 @@
 /**
  * DokuWiki Syntax Plugin Medialist
  *
- * Show a list of media files (images/archives ...) which are referenced
- * in a given page or which belong to the same namespace.
+ * Show a list of media files (images/archives ...) referred in a given page
+ * using curly brackets "{{...}}", or stored in a given namespace.
  *
- * Syntax:  {{medialist>[pagename]}}
+ * Syntax:  {{medialist>[id]}}
+ *          {{medialist>[ns]}}
  *
- *   [pagename] - a valid wiki pagename (use @PAGE@ for the current page)
- * 
+ *   [id] - a valid wiki page id (use @PAGE@ for the current page)
+ *   [ns] - a namespace (use @NAMESPACES@ for the current namespace)
+ *
  * @license GPL 2 (http://www.gnu.org/licenses/gpl.html)
  * @author  Michael Klier <chi@chimeric.de>
+ * @author  Satoshi Sahara <sahara.satoshi@gmail.com>
  */
 // must be run within DokuWiki
 if(!defined('DOKU_INC')) die();
