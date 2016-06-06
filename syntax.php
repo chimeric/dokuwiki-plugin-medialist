@@ -173,7 +173,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         }
 
         if(($mode == 'ns') or ($mode == 'all')) {
-            $dir = utf8_encode(str_replace(':','/', getNS($id)));
+            $dir = utf8_encodeFN(str_replace(':','/', getNS($id)));
             if(@is_dir($conf['mediadir'] . '/' . $dir)) {
                 if(auth_quickaclcheck($dir) >= AUTH_READ) {
                     // get mediafiles of current namespace
