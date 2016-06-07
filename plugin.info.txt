@@ -1,7 +1,7 @@
 base     medialist
 author   Satoshi Sahara (previous author: Michael Klier)
 email    sahara.satoshi@gmail.com
-date     2016-06-05
+date     2016-06-07
 name     MediaList Plugin
-desc     Display a list of media files linked from the page or located in the namespace.
+desc     how a list of media files referred in a given page using curly brackets "{{...}}", or stored in a given namespace.
 url      https://www.dokuwiki.org/plugin:medialist
