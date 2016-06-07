@@ -27,15 +27,15 @@ See the MediList plugin page on DokuWiki.org for further infomation:
 
   * http://dokuwiki.org/plugin:medialist
 
-(c) 2005 - 2009 by Michael Klier <chi@chimeric.de>
-(c) 2016        by Satoshi Sahara <sahara.satoshi@gmail.com>
+(c) 2005 - 2009 by Michael Klier <chi@chimeric.de>  
+(c) 2016        by Satoshi Sahara <sahara.satoshi@gmail.com>  
 
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
+This program is free software; you can redistribute it and/or modify  
+it under the terms of the GNU General Public License as published by  
 the Free Software Foundation; version 2 of the License
 
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+This program is distributed in the hope that it will be useful,  
+but WITHOUT ANY WARRANTY; without even the implied warranty of  
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
 See the GNU General Public License for more details.
 
