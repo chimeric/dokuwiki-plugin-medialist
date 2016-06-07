@@ -114,7 +114,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      * @author Michael Klier <chi@chimeric.de>
      */
     function _media_item($item) {
-        global $conf;
+        global $conf, $lang;
 
         $out = '';
 
@@ -139,9 +139,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $out .= '</a>';
         $out .= '&nbsp;<span class="mediainfo">(';
         if (preg_match('#^https?://#', $item['id'])) {
-            $out .= 'external';
+            $out .= $lang['qb_extlink']; // External Link
         } else {
-            $out .= date("Y/m/d H:i:s", filemtime(mediaFN($item['id']))).'&nbsp;';
+            $out .= strftime($conf['dformat'], filemtime(mediaFN($item['id']))).'&nbsp;';
             $out .= filesize_h(filesize(mediaFN($item['id'])));
         }
         $out .= ')</span>' . DOKU_LF;
