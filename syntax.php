@@ -138,8 +138,12 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $out .= $link['name'];
         $out .= '</a>';
         $out .= '&nbsp;<span class="mediainfo">(';
-        $out .= date("Y/m/d H:i:s", filemtime(mediaFN($item['id']))).'&nbsp;';
-        $out .= filesize_h(filesize(mediaFN($item['id'])));
+        if (preg_match('#^https?://#', $item['id'])) {
+            $out .= 'external';
+        } else {
+            $out .= date("Y/m/d H:i:s", filemtime(mediaFN($item['id']))).'&nbsp;';
+            $out .= filesize_h(filesize(mediaFN($item['id'])));
+        }
         $out .= ')</span>' . DOKU_LF;
 
         return ($out);
