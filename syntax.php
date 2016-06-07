@@ -42,19 +42,19 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         global $ID;
 
         // catch the match
-        $match = substr($match,12,-2);
+        $match = substr($match, 12, -2);
 
         // process the match
-        if($match == '@PAGE@') {
+        if ($match == '@PAGE@') {
             $mode = 'page';
             $id = $ID;
-        } elseif($match == '@NAMESPACE@') {
+        } elseif ($match == '@NAMESPACE@') {
             $mode = 'ns';
             $id = $ID;
-        } elseif($match == '@ALL@') {
+        } elseif ($match == '@ALL@') {
             $mode = 'all';
             $id = $ID;
-        } elseif(@page_exists(cleanID($match))) {
+        } elseif (@page_exists(cleanID($match))) {
             $mode = 'page';
             $id = $match;
         }
@@ -66,12 +66,12 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      * Handles the actual output creation.
      */
     function render($format, Doku_Renderer $renderer, $data) {
-        
-        if($format == 'xhtml'){
+
+        if ($format == 'xhtml'){
             // disable caching
             $mode = $data[0];
             $id = $data[1];
-            if(!empty($data[0])) {
+            if (!empty($data[0])) {
                 $renderer->info['cache'] = false;
                 $renderer->doc .= $this->_medialist_xhtml($mode, $id);
             }
@@ -85,7 +85,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      *
      * @author Michael Klier <chi@chimeric.de>
      */
-    function _medialist_xhtml($mode, $id){
+    function _medialist_xhtml($mode, $id) {
         $out  = '';
 
         $medialist = array();
@@ -94,11 +94,11 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         if(empty($media)) return;
 
         // add list levels for html_buildlist
-        foreach($media as $item) {
+        foreach ($media as $item) {
             array_push($medialist, array('id'=>$item, 'level'=>1));
         }
 
-        $out .= html_buildlist($medialist,'medialist',array(&$this,'_media_item'));
+        $out .= html_buildlist($medialist, 'medialist', array($this, '_media_item'));
 
         return $out;
     }
@@ -157,40 +157,40 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $linked_media = array();
         $intern_media = array();
 
-        if(($mode == 'page') or ($mode == 'all')) {
+        if (($mode == 'page') or ($mode == 'all')) {
             // check permissions for the page
             if(auth_quickaclcheck($id) >= AUTH_READ) {
                 // get the instructions
-                $ins = p_cached_instructions(wikiFN($id),true,$id);
+                $ins = p_cached_instructions(wikiFN($id), true, $id);
 
                 // get linked media files
-                foreach($ins as $node) {
-                    if($node[0] == 'internalmedia') {
-                        array_push($linked_media,$node[1][0]);
-                    } elseif($node[0] == 'externalmedia') {
-                        array_push($linked_media,$node[1][0]);
+                foreach ($ins as $node) {
+                    if ($node[0] == 'internalmedia') {
+                        array_push($linked_media, $node[1][0]);
+                    } elseif ($node[0] == 'externalmedia') {
+                        array_push($linked_media, $node[1][0]);
                     }
                 }
             }
         }
 
-        if(($mode == 'ns') or ($mode == 'all')) {
+        if (($mode == 'ns') or ($mode == 'all')) {
             $ns = getNS($id);
             $dir = utf8_encodeFN(str_replace(':','/', $ns));
-            if(@is_dir($conf['mediadir'] . '/' . $dir)) {
-                if(auth_quickaclcheck("$ns:*") >= AUTH_READ) {
+            if (@is_dir($conf['mediadir'] . '/' . $dir)) {
+                if (auth_quickaclcheck("$ns:*") >= AUTH_READ) {
                     // get mediafiles of current namespace
                     $res = array(); // search result
-                    search($res,$conf['mediadir'],'search_media',array(),$dir);
-                    foreach($res as $item) {
-                        array_push($intern_media,$item['id']);
+                    search($res, $conf['mediadir'], 'search_media', array(), $dir);
+                    foreach ($res as $item) {
+                        array_push($intern_media, $item['id']);
                     }
                 }
             }
         }
 
         // remove unique items
-        $media = array_unique(array_merge($linked_media,$intern_media));
+        $media = array_unique(array_merge($linked_media, $intern_media));
 
         return $media;
     }
