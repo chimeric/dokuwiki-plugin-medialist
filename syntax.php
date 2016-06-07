@@ -24,15 +24,10 @@ if(!defined('DOKU_INC')) die();
  */
 class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
-    /**
-     * Syntax Type
-     *
-     * Needs to return one of the mode types defined in $PARSER_MODES in parser.php
-     */
     function getType()  { return 'substition'; }
     function getPType() { return 'block'; }
     function getSort()  { return 299; }
-    
+
     /**
      * Connect pattern to lexer
      */
@@ -43,7 +38,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Handler to prepare matched data for the rendering process
      */
-    function handle($match, $state, $pos, Doku_Handler $handler){
+    function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
 
         // catch the match
@@ -105,7 +100,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
         $out .= html_buildlist($medialist,'medialist',array(&$this,'_media_item'));
 
-        return ($out);
+        return $out;
     }
 
     /**
@@ -146,7 +141,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         }
         $out .= ')</span>' . DOKU_LF;
 
-        return ($out);
+        return $out;
     }
 
     /**
@@ -180,12 +175,12 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         }
 
         if(($mode == 'ns') or ($mode == 'all')) {
-            $dir = utf8_encodeFN(str_replace(':','/', getNS($id)));
+            $ns = getNS($id);
+            $dir = utf8_encodeFN(str_replace(':','/', $ns));
             if(@is_dir($conf['mediadir'] . '/' . $dir)) {
-                if(auth_quickaclcheck($dir) >= AUTH_READ) {
+                if(auth_quickaclcheck("$ns:*") >= AUTH_READ) {
                     // get mediafiles of current namespace
                     $res = array(); // search result
-                    require_once(DOKU_INC.'inc/search.php');
                     search($res,$conf['mediadir'],'search_media',array(),$dir);
                     foreach($res as $item) {
                         array_push($intern_media,$item['id']);
@@ -197,6 +192,6 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         // remove unique items
         $media = array_unique(array_merge($linked_media,$intern_media));
 
-        return($media);
+        return $media;
     }
 }
