@@ -50,7 +50,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             $id = $ID;
         } elseif ($match == '@NAMESPACE@') {
             $mode = 'ns';
-            $id = $ID;
+            $id = getNS($ID);
         } elseif ($match == '@ALL@') {
             $mode = 'all';
             $id = $ID;
@@ -68,12 +68,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     function render($format, Doku_Renderer $renderer, $data) {
 
         if ($format == 'xhtml'){
-            list($id, $mode) = $data;
             // disable caching
-            if (!empty($data[0])) {
-                $renderer->info['cache'] = false;
-                $renderer->doc .= $this->render_xhtml($id, $mode);
-            }
+            $renderer->info['cache'] = false;
+            $renderer->doc .= $this->render_xhtml($data);
             return true;
         }
         return false;
@@ -82,9 +79,11 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Renders xhtml
      */
-    protected function render_xhtml($id, $mode) {
+    protected function render_xhtml($data) {
         $out  = '';
         $medialist = array();
+
+        list($id, $mode) = $data;
 
         switch ($mode) {
             case 'page':
@@ -94,7 +93,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
                 }
                 break;
             case 'ns':
-                $media = $this->_lookup_stored_media(getNS($id));
+                $media = $this->_lookup_stored_media($id);
                 foreach ($media as $item) {
                     $medialist[] = array('id' => $item, 'level' => 1);
                 }
