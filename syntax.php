@@ -36,7 +36,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Handler to prepare matched data for the rendering process
+     * Handle the match
      */
     function handle($match, $state, $pos, Doku_Handler $handler) {
         global $ID;
@@ -63,7 +63,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Handles the actual output creation.
+     * Create output
      */
     function render($format, Doku_Renderer $renderer, $data) {
 
@@ -73,11 +73,49 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             $id = $data[1];
             if (!empty($data[0])) {
                 $renderer->info['cache'] = false;
-                $renderer->doc .= $this->_medialist_xhtml($mode, $id);
+                $renderer->doc .= $this->render_xhtml($mode, $id);
             }
             return true;
         }
         return false;
+    }
+
+    /**
+     * Renders xhtml
+     */
+    protected function render_xhtml($mode, $id) {
+        $out  = '';
+        $medialist = array();
+
+        switch ($mode) {
+            case 'page':
+                $media = $this->_lookup_linked_media($id);
+                foreach ($media as $item) {
+                    $medialist[] = array('id' => $item, 'level' => 1);
+                }
+                break;
+            case 'ns':
+                $media = $this->_lookup_stored_media(getNS($id));
+                foreach ($media as $item) {
+                    $medialist[] = array('id' => $item, 'level' => 1);
+                }
+                break;
+            case 'all':
+                $linked_media = $this->_lookup_linked_media($id);
+                $stored_media = $this->_lookup_stored_media(getNS($id));
+                $media = array_unique(array_merge($linked_media, $stored_media));
+                foreach ($media as $item) {
+                    if (in_array($item, $linked_media)) {
+                        $medialist[] = array('id' => $item, 'level' => 1, 'linked' => 1);
+                    } else {
+                        $medialist[] = array('id' => $item, 'level' => 1);
+                    }
+                }
+                break;
+        }
+
+        $out .= html_buildlist($medialist, 'medialist', array($this, '_media_item'));
+        return $out;
     }
 
     /**
