@@ -59,7 +59,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             $id = $match;
         }
 
-        return array($mode, $id);
+        return array($id, $mode);
     }
 
     /**
@@ -68,12 +68,11 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     function render($format, Doku_Renderer $renderer, $data) {
 
         if ($format == 'xhtml'){
+            list($id, $mode) = $data;
             // disable caching
-            $mode = $data[0];
-            $id = $data[1];
             if (!empty($data[0])) {
                 $renderer->info['cache'] = false;
-                $renderer->doc .= $this->render_xhtml($mode, $id);
+                $renderer->doc .= $this->render_xhtml($id, $mode);
             }
             return true;
         }
@@ -83,7 +82,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     /**
      * Renders xhtml
      */
-    protected function render_xhtml($mode, $id) {
+    protected function render_xhtml($id, $mode) {
         $out  = '';
         $medialist = array();
 
