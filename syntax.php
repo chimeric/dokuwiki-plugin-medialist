@@ -46,24 +46,16 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
         // process the match
         if ($match == '@PAGE@') {
-            $mode = 'page';
-            $id = $ID;
-            $recursive = false;
+            $params = array('mode' => 'page', 'id' => $ID );
         } elseif ($match == '@NAMESPACE@') {
-            $mode = 'ns';
-            $id = getNS($ID);
-            $recursive = true;
+            $params = array('mode' => 'ns',   'id' => getNS($ID) );
         } elseif ($match == '@ALL@') {
-            $mode = 'all';
-            $id = $ID;
-            $recursive = true;
+            $params = array('mode' => 'all',  'id' => $ID );
         } elseif (@page_exists(cleanID($match))) {
-            $mode = 'page';
-            $id = $match;
-            $recursive = false;
+            $params = array('mode' => 'page', 'id' => cleanID($match) );
         }
 
-        return array($id, $mode, $recursive);
+        return array($state, $params);
     }
 
     /**
@@ -87,7 +79,13 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $out  = '';
         $medialist = array();
 
-        list($id, $mode, $recursive) = $data;
+        list($state, $params) = $data;
+        $id   = $params['id'];
+        $mode = $params['mode'];
+        $opt  = array(); // search option for lookup_stored_media()
+        if (array_key_exists('depth', $params)) {
+            $opt[] = array('depth' => $params['depth']);
+        }
 
         switch ($mode) {
             case 'page':
@@ -97,14 +95,14 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
                 }
                 break;
             case 'ns':
-                $media = $this->_lookup_stored_media($id, $recursive);
+                $media = $this->_lookup_stored_media($id, $opt);
                 foreach ($media as $item) {
                     $medialist[] = array('id' => $item, 'level' => 1);
                 }
                 break;
             case 'all':
                 $linked_media = $this->_lookup_linked_media($id);
-                $stored_media = $this->_lookup_stored_media(getNS($id), $recursive);
+                $stored_media = $this->_lookup_stored_media(getNS($id), $opt);
                 $media = array_unique(array_merge($linked_media, $stored_media));
                 foreach ($media as $item) {
                     if (in_array($item, $linked_media)) {
@@ -192,7 +190,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      * searches media files stored in the given namespace and sub-tiers
      * returns an array of items
      */
-    protected function _lookup_stored_media($ns, $recursive=true) {
+    protected function _lookup_stored_media($ns, $opt=array('depth'=>1)) {
         global $conf;
 
         $intern_media = array();
@@ -206,8 +204,6 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         if (auth_quickaclcheck("$ns:*") >= AUTH_READ) {
             // get mediafiles of current namespace
             $res = array(); // search result
-            $opt = array(); // search option
-            if (!$recursive) $opt['depth'] = 1;
             search($res, $conf['mediadir'], 'search_media', $opt, $dir);
 
             foreach ($res as $item) {
