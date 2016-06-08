@@ -131,6 +131,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $link = array();
         $link['url']    = ml($item['id']);
         $link['class']  = 'media';
+        if (array_key_exists('linked', $item)) {
+            $link['class'] .= ' linked';
+        }
         $link['target'] = $conf['target']['media'];
         $link['name']   = preg_replace('#.*?/|.*?:#','',$item['id']);
         $link['title']  = $link['name'];
