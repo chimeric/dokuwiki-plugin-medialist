@@ -119,29 +119,6 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * Renders the medialist
-     *
-     * @author Michael Klier <chi@chimeric.de>
-     */
-    function _medialist_xhtml($mode, $id) {
-        $out  = '';
-
-        $medialist = array();
-        $media = $this->_media_lookup($mode, $id);
-
-        if(empty($media)) return;
-
-        // add list levels for html_buildlist
-        foreach ($media as $item) {
-            array_push($medialist, array('id'=>$item, 'level'=>1));
-        }
-
-        $out .= html_buildlist($medialist, 'medialist', array($this, '_media_item'));
-
-        return $out;
-    }
-
-    /**
      * Callback function for html_buildlist()
      *
      * @author Michael Klier <chi@chimeric.de>
@@ -183,33 +160,6 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
     }
 
     /**
-     * searches for media linked in the page and its namespace and
-     * returns an array of items
-     *
-     * @author Michael Klier <chi@chimeric.de>
-     */
-    function _media_lookup($mode, $id) {
-        global $conf;
-
-        $media = array();
-        $linked_media = array();
-        $intern_media = array();
-
-        if (($mode == 'page') or ($mode == 'all')) {
-            $linked_media = $this->_lookup_linked_media($id);
-        }
-
-        if (($mode == 'ns') or ($mode == 'all')) {
-            $intern_media = $this->_lookup_stored_media(getNS($id));
-        }
-
-        // remove unique items
-        $media = array_unique(array_merge($linked_media, $intern_media));
-
-        return $media;
-    }
-
-    /**
      * searches media files linked in the given page
      * returns an array of items
      */
@@ -227,9 +177,9 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             // get linked media files
             foreach ($ins as $node) {
                 if ($node[0] == 'internalmedia') {
-                    $linked_media[] = cleanID($node[1][0]));
+                    $linked_media[] = cleanID($node[1][0]);
                 } elseif ($node[0] == 'externalmedia') {
-                    $linked_media[] = $node[1][0]);
+                    $linked_media[] = $node[1][0];
                 }
             }
         }
@@ -257,7 +207,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             search($res, $conf['mediadir'], 'search_media', array(), $dir);
 
             foreach ($res as $item) {
-                $intern_media[] = $item['id']);
+                $intern_media[] = $item['id'];
             }
         }
         return $intern_media;
