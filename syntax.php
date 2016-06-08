@@ -158,35 +158,11 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $intern_media = array();
 
         if (($mode == 'page') or ($mode == 'all')) {
-            // check permissions for the page
-            if(auth_quickaclcheck($id) >= AUTH_READ) {
-                // get the instructions
-                $ins = p_cached_instructions(wikiFN($id), true, $id);
-
-                // get linked media files
-                foreach ($ins as $node) {
-                    if ($node[0] == 'internalmedia') {
-                        array_push($linked_media, $node[1][0]);
-                    } elseif ($node[0] == 'externalmedia') {
-                        array_push($linked_media, $node[1][0]);
-                    }
-                }
-            }
+            $linked_media = $this->_lookup_linked_media($id);
         }
 
         if (($mode == 'ns') or ($mode == 'all')) {
-            $ns = getNS($id);
-            $dir = utf8_encodeFN(str_replace(':','/', $ns));
-            if (@is_dir($conf['mediadir'] . '/' . $dir)) {
-                if (auth_quickaclcheck("$ns:*") >= AUTH_READ) {
-                    // get mediafiles of current namespace
-                    $res = array(); // search result
-                    search($res, $conf['mediadir'], 'search_media', array(), $dir);
-                    foreach ($res as $item) {
-                        array_push($intern_media, $item['id']);
-                    }
-                }
-            }
+            $intern_media = $this->_lookup_stored_media(getNS($id));
         }
 
         // remove unique items
@@ -194,4 +170,59 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
         return $media;
     }
+
+    /**
+     * searches media files linked in the given page
+     * returns an array of items
+     */
+    protected function _lookup_linked_media($id) {
+        $linked_media = array();
+
+        if (!page_exists($id)) {
+            msg('MediaList: page "'. hsc($id) . '" not exists!', -1); 
+        }
+
+        if (auth_quickaclcheck($id) >= AUTH_READ) {
+            // get the instructions
+            $ins = p_cached_instructions(wikiFN($id), true, $id);
+
+            // get linked media files
+            foreach ($ins as $node) {
+                if ($node[0] == 'internalmedia') {
+                    $linked_media[] = cleanID($node[1][0]));
+                } elseif ($node[0] == 'externalmedia') {
+                    $linked_media[] = $node[1][0]);
+                }
+            }
+        }
+        return array_unique($linked_media);
+    }
+
+    /**
+     * searches media files stored in the given namespace and sub-tiers
+     * returns an array of items
+     */
+    protected function _lookup_stored_media($ns) {
+        global $conf;
+
+        $intern_media = array();
+
+        $dir = utf8_encodeFN(str_replace(':','/', $ns));
+
+        if (!is_dir($conf['mediadir'] . '/' . $dir)) {
+            msg('MediaList: namespace "'. hsc($ns). '" not exists!', -1);
+        }
+
+        if (auth_quickaclcheck("$ns:*") >= AUTH_READ) {
+            // get mediafiles of current namespace
+            $res = array(); // search result
+            search($res, $conf['mediadir'], 'search_media', array(), $dir);
+
+            foreach ($res as $item) {
+                $intern_media[] = $item['id']);
+            }
+        }
+        return $intern_media;
+    }
+
 }
