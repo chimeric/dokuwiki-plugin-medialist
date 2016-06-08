@@ -52,6 +52,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         } elseif ($match == '@NAMESPACE@') {
             $mode = 'ns';
             $id = getNS($ID);
+            $recursive = true;
         } elseif ($match == '@ALL@') {
             $mode = 'all';
             $id = $ID;
@@ -59,7 +60,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         } elseif (@page_exists(cleanID($match))) {
             $mode = 'page';
             $id = $match;
-            $recursive = true;
+            $recursive = false;
         }
 
         return array($id, $mode, $recursive);
