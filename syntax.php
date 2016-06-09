@@ -45,14 +45,49 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $match = substr($match, 12, -2);
 
         // process the match
-        if ($match == '@PAGE@') {
-            $params = array('mode' => 'page', 'id' => $ID );
-        } elseif ($match == '@NAMESPACE@') {
-            $params = array('mode' => 'ns',   'id' => getNS($ID) );
-        } elseif ($match == '@ALL@') {
-            $params = array('mode' => 'all',  'id' => $ID );
-        } elseif (@page_exists(cleanID($match))) {
-            $params = array('mode' => 'page', 'id' => cleanID($match) );
+        $params = array();
+
+        // v1 syntax (backword compatibility for 2009-05-21 release)
+        // @PAGE@, @NAMESPACE@, @ALL@ are complete keyword arguments,
+        // not replacement patterns.
+        switch ($match) {
+            case '@PAGE@':
+                $params = array('mode' => 'page', 'id' => $ID );
+                break;
+            case '@NAMESPACE@':
+                $params = array('mode' => 'ns',   'id' => getNS($ID) );
+                break;
+            case '@ALL@':
+                $params = array('mode' => 'all',  'id' => $ID );
+                break;
+        }
+
+        // v2 syntax (available since 2016-06-XX release)
+        // - enable replacement patterns @ID@, @NS@, @PAGE@
+        //   for media file search target
+        // - Namespace search mode if target ends colon ":", and
+        //   require "*" after the colon for recursive search
+        if (empty($params)) {
+            $target = trim($match);
+
+            // namespace searach options
+            if (substr($target, -2) == ':*') {
+                $params['mode']  = 'ns';  // not set depth option
+            } elseif (substr($target, -1) == ':') {
+                $params['mode']  = 'ns';
+                $params['depth'] = 1;
+            } else {
+                $params['mode']  = 'page';
+            }
+            $target = rtrim($target, ':*');
+
+            // replacement patterns identical with Namespace Template
+            // @see https://www.dokuwiki.org/namespace_templates#syntax
+            $target = str_replace('@ID@', $ID, $target);
+            $target = str_replace('@NS@', getNS($ID), $target);
+            $target = str_replace('@PAGE@', noNS($ID), $target);
+
+            $params['id'] = cleanID($target);
         }
 
         return array($state, $params);
