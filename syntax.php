@@ -149,7 +149,13 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
                 break;
         }
 
-        $out .= html_buildlist($items, 'medialist', array($this, '_media_item'));
+        if (!empty($items)) {
+            $out .= html_buildlist($items, 'medialist', array($this, '_media_item'));
+        } else {
+            $out .= '<div class="medialist info">';
+            $out .= '<strong>'.$this->getPluginName().'</strong>'.': nothing to show here.';
+            $out .= '</div>';
+        }
         return $out;
     }
 
@@ -202,7 +208,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $linked_media = array();
 
         if (!page_exists($id)) {
-            msg('MediaList: page "'. hsc($id) . '" not exists!', -1); 
+            //msg('MediaList: page "'. hsc($id) . '" not exists!', -1); 
         }
 
         if (auth_quickaclcheck($id) >= AUTH_READ) {
@@ -233,7 +239,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
         $dir = utf8_encodeFN(str_replace(':','/', $ns));
 
         if (!is_dir($conf['mediadir'] . '/' . $dir)) {
-            msg('MediaList: namespace "'. hsc($ns). '" not exists!', -1);
+            //msg('MediaList: namespace "'. hsc($ns). '" not exists!', -1);
         }
 
         if (auth_quickaclcheck("$ns:*") >= AUTH_READ) {
