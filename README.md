@@ -1,25 +1,31 @@
 # MediaList Plugin for DokuWiki
 
-This plugin shows a list of media files for a given wikipage which are
-either linked in the page itself or belong to its namespace.
+This plugin shows a list of media files referred in a given wikipage or 
+stored in a given namespace.
 Note, the plugin is aware of your ACLs.
 
 ## Usage
-To list the media files linked in the given page use:
+
+To list media files linked in the given page use:
 
     {{medialist>wikipage}}
 
-To list the media files linked in the current page use:
+To list media files linked in the current page use:
 
-    {{medialist>@PAGE@}}
+    {{medialist>@ID@}} or {{medialist>@NS@:@ID@}}
 
-To list the media files contained in the current namespace use:
+To list media files stored in the current namespace use:
 
-    {{medialist>@NAMESPACE@}}
+    {{medialist>@NS@:}}
 
-To list both, media files linked in the current page and contained in the current namespace use:
+To list media files stored in the current namespace and its sub-namesapces use:
 
-    {{medialist>@ALL@}}
+    {{medialist>@NS@:*}}
+
+To list media files stored in the given namespace and its sub-namesapces use:
+
+    {{medialist>ns1:ns2:*}}
+
 
 ----
 
