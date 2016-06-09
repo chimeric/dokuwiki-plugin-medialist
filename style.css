@@ -3,13 +3,13 @@
  * @author Michael Klier <chi@chimeric.de>
  */
 
-div.dokuwiki ul.medialist {
+.dokuwiki ul.medialist {
   list-style: none;
   margin-left: 0;
 }
-div.dokuwiki ul.medialist a.linked {
+.dokuwiki ul.medialist a.linked {
   font-weight: bold;
 }
-div.dokuwiki ul.medialist span.mediainfo {
+.dokuwiki ul.medialist span.mediainfo {
   font-size: 90%;
 }

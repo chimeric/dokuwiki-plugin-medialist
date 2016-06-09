@@ -112,7 +112,7 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
      */
     protected function render_xhtml($data) {
         $out  = '';
-        $medialist = array();
+        $items = array();
 
         list($state, $params) = $data;
         $id   = $params['id'];
@@ -126,30 +126,30 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
             case 'page':
                 $media = $this->_lookup_linked_media($id);
                 foreach ($media as $item) {
-                    $medialist[] = array('id' => $item, 'level' => 1);
+                    $items[] = array('level'=> 1, 'id'=> $item, 'base'=> getNS($item));
                 }
                 break;
             case 'ns':
                 $media = $this->_lookup_stored_media($id, $opt);
                 foreach ($media as $item) {
-                    $medialist[] = array('id' => $item, 'level' => 1);
+                    $items[] = array('level'=> 1, 'id'=> $item, 'base'=> $id);
                 }
                 break;
             case 'all':
                 $linked_media = $this->_lookup_linked_media($id);
                 $stored_media = $this->_lookup_stored_media(getNS($id), $opt);
-                $media = array_unique(array_merge($linked_media, $stored_media));
+                $media = array_unique(array_merge($stored_media, $linked_media));
                 foreach ($media as $item) {
                     if (in_array($item, $linked_media)) {
-                        $medialist[] = array('id' => $item, 'level' => 1, 'linked' => 1);
+                        $items[] = array('level'=> 1, 'id'=> $item, 'base'=> $id, 'linked'=> 1);
                     } else {
-                        $medialist[] = array('id' => $item, 'level' => 1);
+                        $items[] = array('level'=> 1, 'id'=> $item, 'base'=> $id);
                     }
                 }
                 break;
         }
 
-        $out .= html_buildlist($medialist, 'medialist', array($this, '_media_item'));
+        $out .= html_buildlist($items, 'medialist', array($this, '_media_item'));
         return $out;
     }
 
@@ -165,13 +165,10 @@ class syntax_plugin_medialist extends DokuWiki_Syntax_Plugin {
 
         $link = array();
         $link['url']    = ml($item['id']);
-        $link['class']  = 'media';
-        if (array_key_exists('linked', $item)) {
-            $link['class'] .= ' linked';
-        }
+        $link['class']  = isset($item['linked']) ? 'media linked' : 'media';
         $link['target'] = $conf['target']['media'];
-        $link['name']   = preg_replace('#.*?/|.*?:#','',$item['id']);
-        $link['title']  = $link['name'];
+        $link['title']  = noNS($item['id']);
+        $link['name']   = str_replace($item['base'].':','', $item['id']);
 
         // add file icons
         list($ext,$mime) = mimetype($item['id']);
