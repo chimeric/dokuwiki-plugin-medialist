@@ -15,11 +15,11 @@ Some replacement patterns for namespace templates --- `@ID@`, `@NS@`, `@PAGE@` -
 in order to specify the scope parameter.
 
 
-To list the media files linked in the specific page, use:
+To list media files linked in the specific page, use:
 
     {{medialist>wikipage}}
 
-To list the media files linked in the current page use:
+To list media files linked in the current page use:
 
     {{medialist>@ID@}} or {{medialist>@NS@:@PAGE@}}
 
@@ -46,7 +46,7 @@ These literal keywords must be used as is, and are not kind of replacement patte
 * `{{medialist>@NAMESPACE@}}` shows files stored in the current namespace and sub namecpaces.
 * `{{medialist>@ALL@}}` shows all files when `@PAGE@` and `@NAMESPACE@` keywords given.
 
-Legacy literal keywords should be replaced using replacement patterns:
+Legacy literal keywords should be corrected using replacement patterns:
 
     {{medialist>@PAGE@}} is same as {{medialist>@ID@}} 
     {{medialist>@NAMESPACE@}} is same as {{medialist>@NS@:}} 
