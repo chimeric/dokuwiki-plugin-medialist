@@ -1,9 +1,15 @@
 /**
- * CSS for the medialist plugin
+ * CSS for the MediaList plugin
  * @author Michael Klier <chi@chimeric.de>
  */
 
-div.dokuwiki ul.medialist {
+.dokuwiki ul.medialist {
   list-style: none;
   margin-left: 0;
-} 
+}
+.dokuwiki ul.medialist a.linked {
+  font-weight: bold;
+}
+.dokuwiki ul.medialist span.mediainfo {
+  font-size: 90%;
+}
